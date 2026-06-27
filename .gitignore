@@ -1,0 +1,14 @@
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.trash/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*.bak
+*.log
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+node_modules/
+__pycache__/

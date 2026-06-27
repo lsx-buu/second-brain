@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>我的第二大脑</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f7f4;
+      --surface: #ffffff;
+      --surface-2: #f0f3f1;
+      --text: #1f2723;
+      --muted: #647067;
+      --line: #dce2dd;
+      --accent: #0f766e;
+      --accent-2: #2f6f9f;
+      --warn: #a15c18;
+      --radius: 8px;
+      --shadow: 0 12px 30px rgba(25, 32, 28, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+    }
+
+    aside {
+      border-right: 1px solid var(--line);
+      background: #fbfbf8;
+      min-height: 100vh;
+      padding: 18px;
+      position: sticky;
+      top: 0;
+      align-self: start;
+    }
+
+    main {
+      min-width: 0;
+      padding: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .mark {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      background: var(--surface);
+      font-weight: 800;
+    }
+
+    h1 {
+      font-size: 18px;
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .control {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .file-label,
+    button {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 11px;
+      transition: 140ms ease;
+      user-select: none;
+    }
+
+    .file-label:hover,
+    button:hover {
+      border-color: #9ab4ad;
+      box-shadow: 0 4px 14px rgba(20, 100, 92, 0.08);
+    }
+
+    .file-label input {
+      display: none;
+    }
+
+    input[type="search"] {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 8px 11px;
+      color: var(--text);
+      outline: none;
+    }
+
+    input[type="search"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 14px 0 16px;
+    }
+
+    .chip {
+      border-radius: 999px;
+      min-height: 30px;
+      padding: 5px 10px;
+      color: var(--muted);
+      background: var(--surface);
+    }
+
+    .chip.active {
+      color: #ffffff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .list {
+      display: grid;
+      gap: 8px;
+      max-height: calc(100vh - 260px);
+      overflow: auto;
+      padding-right: 3px;
+    }
+
+    .item {
+      text-align: left;
+      justify-content: flex-start;
+      align-items: flex-start;
+      display: grid;
+      gap: 2px;
+      min-height: 54px;
+    }
+
+    .item.active {
+      border-color: var(--accent);
+      background: #eef8f6;
+    }
+
+    .item-title {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .item-path {
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 9px;
+      color: var(--muted);
+      background: var(--surface);
+      font-size: 12px;
+    }
+
+    .reader {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 26px;
+      max-width: 920px;
+    }
+
+    .empty {
+      background: var(--surface);
+      border: 1px dashed #b7c2ba;
+      border-radius: var(--radius);
+      padding: 28px;
+      max-width: 780px;
+    }
+
+    .empty h2 {
+      margin-top: 0;
+    }
+
+    .content {
+      overflow-wrap: anywhere;
+    }
+
+    .content h1,
+    .content h2,
+    .content h3 {
+      letter-spacing: 0;
+      line-height: 1.35;
+    }
+
+    .content h1 {
+      font-size: 24px;
+      margin: 0 0 18px;
+    }
+
+    .content h2 {
+      font-size: 18px;
+      margin: 24px 0 8px;
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+    }
+
+    .content h3 {
+      font-size: 15px;
+      margin: 18px 0 8px;
+    }
+
+    .content p {
+      margin: 9px 0;
+    }
+
+    .content ul,
+    .content ol {
+      padding-left: 22px;
+    }
+
+    .content li {
+      margin: 5px 0;
+    }
+
+    .content a {
+      color: var(--accent-2);
+      text-decoration: none;
+    }
+
+    .content a:hover {
+      text-decoration: underline;
+    }
+
+    .path-note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+      overflow-wrap: anywhere;
+    }
+
+    .notice {
+      margin-top: 12px;
+      color: var(--warn);
+      font-size: 13px;
+    }
+
+    @media (max-width: 820px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        position: relative;
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .list {
+        max-height: 280px;
+      }
+
+      main {
+        padding: 16px;
+      }
+
+      .reader {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="mark">KB</div>
+        <div>
+          <h1>我的第二大脑</h1>
+          <div class="subtle">本地 Markdown 知识库</div>
+        </div>
+      </div>
+
+      <div class="control">
+        <label class="file-label">
+          选择知识库文件夹
+          <input id="folderInput" type="file" webkitdirectory directory multiple>
+        </label>
+        <input id="searchInput" type="search" placeholder="搜索标题、正文、标签">
+      </div>
+
+      <div class="subtle" id="status">尚未读取文件。选择“我的第二大脑”文件夹即可开始。</div>
+      <div class="notice" id="notice"></div>
+
+      <div class="filters" id="filters"></div>
+      <div class="list" id="fileList"></div>
+    </aside>
+
+    <main>
+      <div id="emptyState" class="empty">
+        <h2>不用 Obsidian 也可以用</h2>
+        <p>这个页面会在浏览器里读取本地 Markdown 文件，不上传任何内容。</p>
+        <p>点击左侧“选择知识库文件夹”，选择当前的 <strong>我的第二大脑</strong> 文件夹，然后搜索和浏览卡片。</p>
+        <p class="path-note">建议选择：C:\Users\33864\Documents\Codex\2026-06-27\codex\outputs\我的第二大脑</p>
+      </div>
+
+      <article id="reader" class="reader" hidden>
+        <div class="topbar">
+          <div>
+            <h2 id="readerTitle"></h2>
+            <div class="path-note" id="readerPath"></div>
+            <div class="meta" id="readerMeta"></div>
+          </div>
+        </div>
+        <div id="content" class="content"></div>
+      </article>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      docs: [],
+      filtered: [],
+      activePath: "",
+      activeType: "all"
+    };
+
+    const folderInput = document.getElementById("folderInput");
+    const searchInput = document.getElementById("searchInput");
+    const statusEl = document.getElementById("status");
+    const noticeEl = document.getElementById("notice");
+    const filtersEl = document.getElementById("filters");
+    const fileListEl = document.getElementById("fileList");
+    const emptyState = document.getElementById("emptyState");
+    const reader = document.getElementById("reader");
+    const readerTitle = document.getElementById("readerTitle");
+    const readerPath = document.getElementById("readerPath");
+    const readerMeta = document.getElementById("readerMeta");
+    const contentEl = document.getElementById("content");
+
+    folderInput.addEventListener("change", async (event) => {
+      const files = Array.from(event.target.files || [])
+        .filter((file) => file.name.toLowerCase().endsWith(".md"));
+
+      if (!files.length) {
+        noticeEl.textContent = "没有读到 Markdown 文件。请确认选择的是知识库根目录。";
+        return;
+      }
+
+      noticeEl.textContent = "";
+      const docs = await Promise.all(files.map(readMarkdownFile));
+      state.docs = docs.sort((a, b) => a.path.localeCompare(b.path, "zh-CN"));
+      state.activePath = state.docs[0]?.path || "";
+      renderFilters();
+      applySearch();
+    });
+
+    searchInput.addEventListener("input", applySearch);
+
+    async function readMarkdownFile(file) {
+      const raw = await file.text();
+      const path = file.webkitRelativePath || file.name;
+      const parsed = parseMarkdown(raw);
+      return {
+        path,
+        raw,
+        body: parsed.body,
+        frontMatter: parsed.frontMatter,
+        title: parsed.title || file.name.replace(/\.md$/i, ""),
+        type: normalizeType(parsed.frontMatter.type || parsed.frontMatter["类型"] || inferType(path))
+      };
+    }
+
+    function parseMarkdown(raw) {
+      let body = raw;
+      const frontMatter = {};
+
+      if (raw.startsWith("---")) {
+        const end = raw.indexOf("\n---", 3);
+        if (end !== -1) {
+          const yaml = raw.slice(3, end).trim();
+          body = raw.slice(end + 4).trim();
+          parseFrontMatter(yaml, frontMatter);
+        }
+      }
+
+      const titleMatch = body.match(/^#\s+(.+)$/m);
+      return {
+        body,
+        frontMatter,
+        title: titleMatch ? titleMatch[1].trim() : ""
+      };
+    }
+
+    function parseFrontMatter(yaml, target) {
+      let currentKey = "";
+      yaml.split(/\r?\n/).forEach((line) => {
+        const keyValue = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+        const listValue = line.match(/^\s*-\s*(.+)$/);
+        if (keyValue) {
+          currentKey = keyValue[1];
+          const value = keyValue[2].trim();
+          target[currentKey] = value || [];
+        } else if (listValue && currentKey) {
+          if (!Array.isArray(target[currentKey])) target[currentKey] = [];
+          target[currentKey].push(listValue[1].trim());
+        }
+      });
+    }
+
+    function inferType(path) {
+      if (path.includes("/方法论/") || path.includes("\\方法论\\")) return "method";
+      if (path.includes("/决策/") || path.includes("\\决策\\")) return "decision";
+      if (path.includes("/偏好/") || path.includes("\\偏好\\")) return "preference";
+      if (path.includes("/模式/") || path.includes("\\模式\\")) return "pattern";
+      if (path.includes("自动化候选")) return "automation-candidate";
+      if (path.includes("项目")) return "project";
+      return "note";
+    }
+
+    function renderFilters() {
+      const types = Array.from(new Set(state.docs.map((doc) => doc.type))).sort();
+      const all = [{ key: "all", label: "全部" }].concat(types.map((type) => ({
+        key: type,
+        label: typeLabel(type)
+      })));
+
+      filtersEl.innerHTML = "";
+      all.forEach((filter) => {
+        const button = document.createElement("button");
+        button.className = `chip ${state.activeType === filter.key ? "active" : ""}`;
+        button.textContent = filter.label;
+        button.addEventListener("click", () => {
+          state.activeType = filter.key;
+          renderFilters();
+          applySearch();
+        });
+        filtersEl.appendChild(button);
+      });
+    }
+
+    function applySearch() {
+      const query = searchInput.value.trim().toLowerCase();
+      state.filtered = state.docs.filter((doc) => {
+        const typeMatches = state.activeType === "all" || doc.type === state.activeType;
+        if (!typeMatches) return false;
+        if (!query) return true;
+        const haystack = [
+          doc.title,
+          doc.path,
+          doc.body,
+          JSON.stringify(doc.frontMatter)
+        ].join("\n").toLowerCase();
+        return haystack.includes(query);
+      });
+
+      if (!state.filtered.some((doc) => doc.path === state.activePath)) {
+        state.activePath = state.filtered[0]?.path || "";
+      }
+
+      renderList();
+      renderReader();
+    }
+
+    function renderList() {
+      fileListEl.innerHTML = "";
+      statusEl.textContent = `已读取 ${state.docs.length} 个 Markdown 文件，当前显示 ${state.filtered.length} 个。`;
+
+      state.filtered.forEach((doc) => {
+        const button = document.createElement("button");
+        button.className = `item ${doc.path === state.activePath ? "active" : ""}`;
+        button.addEventListener("click", () => {
+          state.activePath = doc.path;
+          renderList();
+          renderReader();
+        });
+
+        const title = document.createElement("div");
+        title.className = "item-title";
+        title.textContent = doc.title;
+
+        const path = document.createElement("div");
+        path.className = "item-path";
+        path.textContent = doc.path;
+
+        button.append(title, path);
+        fileListEl.appendChild(button);
+      });
+    }
+
+    function renderReader() {
+      const doc = state.filtered.find((item) => item.path === state.activePath);
+      if (!doc) {
+        reader.hidden = true;
+        emptyState.hidden = false;
+        if (state.docs.length) {
+          emptyState.innerHTML = "<h2>没有匹配结果</h2><p>换个关键词，或者切回“全部”。</p>";
+        }
+        return;
+      }
+
+      emptyState.hidden = true;
+      reader.hidden = false;
+      readerTitle.textContent = doc.title;
+      readerPath.textContent = doc.path;
+      readerMeta.innerHTML = "";
+
+      [
+        ["类型", typeLabel(doc.type)],
+        ["状态", doc.frontMatter.status || doc.frontMatter["状态"]],
+        ["创建", doc.frontMatter.created || doc.frontMatter["创建时间"]],
+        ["来源", doc.frontMatter.source || doc.frontMatter["来源"]]
+      ].forEach(([label, value]) => {
+        if (!value) return;
+        const pill = document.createElement("span");
+        pill.className = "pill";
+        pill.textContent = `${label}: ${value}`;
+        readerMeta.appendChild(pill);
+      });
+
+      const tags = Array.isArray(doc.frontMatter.tags)
+        ? doc.frontMatter.tags
+        : Array.isArray(doc.frontMatter["标签"])
+          ? doc.frontMatter["标签"]
+          : [];
+      tags.forEach((tag) => {
+        const pill = document.createElement("span");
+        pill.className = "pill";
+        pill.textContent = `#${tag}`;
+        readerMeta.appendChild(pill);
+      });
+
+      contentEl.innerHTML = markdownToHtml(doc.body);
+    }
+
+    function markdownToHtml(markdown) {
+      const lines = markdown.split(/\r?\n/);
+      let html = "";
+      let inList = false;
+      let inOrderedList = false;
+
+      function closeLists() {
+        if (inList) html += "</ul>";
+        if (inOrderedList) html += "</ol>";
+        inList = false;
+        inOrderedList = false;
+      }
+
+      for (const line of lines) {
+        if (/^#\s+/.test(line)) {
+          closeLists();
+          html += `<h1>${inline(line.replace(/^#\s+/, ""))}</h1>`;
+        } else if (/^##\s+/.test(line)) {
+          closeLists();
+          html += `<h2>${inline(line.replace(/^##\s+/, ""))}</h2>`;
+        } else if (/^###\s+/.test(line)) {
+          closeLists();
+          html += `<h3>${inline(line.replace(/^###\s+/, ""))}</h3>`;
+        } else if (/^\s*-\s+/.test(line)) {
+          if (!inList) {
+            closeLists();
+            html += "<ul>";
+            inList = true;
+          }
+          html += `<li>${inline(line.replace(/^\s*-\s+/, ""))}</li>`;
+        } else if (/^\s*\d+\.\s+/.test(line)) {
+          if (!inOrderedList) {
+            closeLists();
+            html += "<ol>";
+            inOrderedList = true;
+          }
+          html += `<li>${inline(line.replace(/^\s*\d+\.\s+/, ""))}</li>`;
+        } else if (!line.trim()) {
+          closeLists();
+        } else {
+          closeLists();
+          html += `<p>${inline(line)}</p>`;
+        }
+      }
+
+      closeLists();
+      return html;
+    }
+
+    function inline(text) {
+      return escapeHtml(text)
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/\[\[([^|\]]+)\|([^\]]+)\]\]/g, "<a href=\"#\" data-wiki=\"$1\">$2</a>")
+        .replace(/\[\[([^\]]+)\]\]/g, "<a href=\"#\" data-wiki=\"$1\">$1</a>");
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function typeLabel(type) {
+      const labels = {
+        "method": "方法",
+        "decision": "决策",
+        "preference": "偏好",
+        "pattern": "模式",
+        "project": "项目",
+        "automation-candidate": "自动化",
+        "note": "笔记"
+      };
+      return labels[type] || type;
+    }
+
+    function normalizeType(type) {
+      const normalized = {
+        "方法论": "method",
+        "决策": "decision",
+        "偏好": "preference",
+        "模式": "pattern",
+        "项目": "project",
+        "自动化候选": "automation-candidate",
+        "自动化": "automation-candidate",
+        "笔记": "note"
+      };
+      return normalized[type] || type;
+    }
+
+    contentEl.addEventListener("click", (event) => {
+      const link = event.target.closest("[data-wiki]");
+      if (!link) return;
+      event.preventDefault();
+      const target = link.dataset.wiki.toLowerCase();
+      const match = state.docs.find((doc) => {
+        const normalizedPath = doc.path.replace(/\\/g, "/").replace(/\.md$/i, "").toLowerCase();
+        return normalizedPath.endsWith(target) || doc.title.toLowerCase() === target;
+      });
+      if (match) {
+        state.activePath = match.path;
+        state.activeType = "all";
+        searchInput.value = "";
+        renderFilters();
+        applySearch();
+      }
+    });
+  </script>
+</body>
+</html>
